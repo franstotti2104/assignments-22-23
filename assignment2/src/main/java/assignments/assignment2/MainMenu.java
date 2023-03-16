@@ -57,12 +57,18 @@ public class MainMenu {
             System.out.println("Field nomor hp hanya menerima digit.");
             nomorHP = input.nextLine();
         }
-
+        for (Member element: memberList){
+            if(element.getId().equals(generateId(nama, nomorHP))){
+                System.out.printf("Member dengan nama %s dan nomor hp %s sudah ada!",nama,nomorHP);
+                return;
+            }
+        }
         Member member = new Member(nama, nomorHP);
         member.setBonusCounter(0);        
         for (int i = banyakPengguna-1; i<banyakPengguna; i++){
             memberList.add(member);
         }
+        
 
         System.out.printf("Berhasil membuat member dengan ID %s", NotaGenerator.generateId(nama, nomorHP));
         System.out.println();
