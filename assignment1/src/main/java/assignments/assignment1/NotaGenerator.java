@@ -1,9 +1,8 @@
 package assignments.assignment1;
 
-import java.util.Scanner;
-import java.util.Calendar;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Calendar;
+import java.util.Scanner;
 
 public class NotaGenerator {
     private static final Scanner input = new Scanner(System.in);
@@ -12,125 +11,36 @@ public class NotaGenerator {
      * Method main, program utama kalian berjalan disini.
      */
     public static void main(String[] args) {
-        while (true){
-
-            //Print Menu yang tersedia
+        while (true) {
             printMenu();
-            System.out.print("Pilihan: ");
-            String pilihan = input.next();
+            System.out.print("Pilihan : ");
+            String command = input.nextLine();
+
             System.out.println("================================");
-
-            //Memberi program jika pilihan adalah 1 atau 2 atau 0 atau bukan ketiganya
-            if (pilihan.equals("1")){
-
-                //Menjalankan program jika pilihan = 1
-                System.out.println("Masukkan nama Anda: ");
-                String nama = input.next();
-                input.nextLine();
-                System.out.println("Masukkan nomor handphone Anda: ");
-                String nomorHP = input.nextLine();
-
-                //Mengecek jika nomorHP terdapat huruf atau unsur lain yang bukan angka
-                for(int i = 0; i < nomorHP.length(); i++){
-                    char charAngka = nomorHP.charAt(i);
-                    String angka = String.valueOf(charAngka);
-                    if(cekNumber(angka)){
-                        continue;
-                    }else{
-                        System.out.println("Nomor HP hanya menerima digit");
-                        nomorHP = input.nextLine();
-                        break;
-                    }
-                }
-
-                //Print method generateId
-                System.out.println("ID Anda : " + generateId(nama, nomorHP));
-
-            //Jika pilihan = 2
-            }else if (pilihan.equals("2")){
-
-                System.out.println("Masukkan nama Anda: ");
-                String nama = input.next();
-                input.nextLine();
-                System.out.println("Masukkan nomor handphone Anda: ");
-                String nomorHp = input.nextLine();
-                System.out.println("Masukkan tanggal terima: ");
-                String tanggal = input.next();
-                input.nextLine();
-                String paket;
-
-                
-                while(true){
-                    System.out.println("Masukkan paket laundry: ");
-                    paket = input.next();
-
-                    //Jika paket diketik ?, untuk menampilkan menu paket
-                    if(paket.equals("?")){
-                        showPaket();
-                    
-                    //Jika paket bukan express, fast, maupun reguler
-                    }else if(!paket.equals("express") && !paket.equals("fast") && !paket.equals("reguler")){
-                        System.out.println("Paket " + paket + " tidak diketahui");
-                        System.out.println("[ketik ? untuk mencari tahu jenis paket]");
-
-                    //Jika paket merupakan express, fast, atau reguler
-                    }else if(paket.equals("express")||paket.equals("fast")||paket.equals("reguler")){
-                        break;
-                    }
-                }
-
-                //Meminta input berat
-                System.out.println("Masukkan berat cucian Anda: ");
-                String berat;
-                int intBerat;
-                while(true){
-                    berat = input.next();
-                    //Mencek jika inputan terdapat huruf
-                    for (int i = 0; i<berat.length(); i++){
-                        char charBerat = berat.charAt(i);
-                        String strBerat = String.valueOf(charBerat);
-                        if (cekNumber(strBerat)){
-                            continue;
-                        }else{
-                            System.out.println("Harap masukkan berat cucian anda dalam bentuk bilangan positif");
-                            berat = input.next();
-                            break;
-                        }
-                    }
-                    intBerat = Integer.parseInt(berat);
-                    if(intBerat<0){
-                        System.out.println("Harap masukkan berat cucian anda dalam bentuk bilangan positif");
-                    }else if(intBerat<2){
-                        System.out.println("Cucian kurang dari 2 kg, maka cucian akan dianggap sebagai 2 kg.");
-                        intBerat = 2;
-                        break;
-                    }else {
-                        break;
-                    }
-                }
-
-                //print hasil akhir
-                String id = generateId(nama, nomorHp);
-                System.out.println("Nota Laundry");
-                System.out.println(generateNota(id, paket, intBerat, tanggal));
-            
-            //Jika pilihan = 0
-            }else if(pilihan.equals("0")){
-                System.out.println("Terima kasih telah menggunakan NotaGenerator!");
-                break;
-            }else{
-                System.out.println("Perintah tidak diketahui, silakan periksa kembali");
+            if (command.equals("1")) {
+                System.out.printf("ID Anda : %s\n", handleMenuGenerateID());
+                continue;
             }
-        }
-        input.close();
-    }    
-    
 
+            if (command.equals("2")) {
+                handleMenuGenerateNota();
+                continue;
+            }
+
+            if (command.equals("0")) {
+                break;
+            }
+
+            System.out.println("Perintah tidak diketahui, silakan periksa kembali.");
+        }
+
+        System.out.println("Terima kasih telah menggunakan NotaGenerator!");
+    }
 
     /**
      * Method untuk menampilkan menu di NotaGenerator.
      */
-    private static void printMenu() {
+    public static void printMenu() {
         System.out.println("Selamat datang di NotaGenerator!");
         System.out.println("==============Menu==============");
         System.out.println("[1] Generate ID");
@@ -141,7 +51,7 @@ public class NotaGenerator {
     /**
      * Method untuk menampilkan paket.
      */
-    private static void showPaket() {
+    public static void showPaket() {
         System.out.println("+-------------Paket-------------+");
         System.out.println("| Express | 1 Hari | 12000 / Kg |");
         System.out.println("| Fast    | 2 Hari | 10000 / Kg |");
@@ -156,44 +66,21 @@ public class NotaGenerator {
      * @return String ID anggota dengan format [NAMADEPAN]-[nomorHP]-[2digitChecksum]
      */
     public static String generateId(String nama, String nomorHP){
-        //Memisahkan nama jika nama lebih dari 1 kata
-        String[] pemisahNama = nama.split(" ");
-        String namaID = pemisahNama[0].toUpperCase();
-        int finalNama = 0;
-        int finalNomor = 0;
-        int checkSum;
+        String id = "";
+        id += (nama.split(" ")[0] + "-").toUpperCase();
+        id += nomorHP;
 
-        //Mengubah setiap huruf dalam nama menjadi kode Ascii kemudian diubah menjadi value setiap alfabet
-        for (int i = 0; i < namaID.length(); i++){
-            int ascii = (int) namaID.charAt(i) - 64;
-            finalNama += ascii;
+        int checksum = 0;
+        for (char c : id.toCharArray()) {
+            if (Character.isDigit(c))
+                checksum += c - '0';
+            else if (Character.isLetter(c))
+                checksum += (c - 'A') + 1;
+            else
+                checksum += 7;
         }
-
-        //Mengubah tiap nomor dalam string menjadi kode Ascii kemudian diubah menjadi value setiap nomor
-        for (int i = 0; i < nomorHP.length(); i++){
-            int intNomor = (int) nomorHP.charAt(i) - 48;
-            finalNomor += intNomor;
-        }
-
-        //Menjumlahkan tiap kode agar menjadi checkSum
-        checkSum = finalNama+finalNomor+7;
-        String finalCheckSum = Integer.toString(checkSum);
-
-        //Membuat pemisalan jika CheckSum lebih dari 2 digit, dan jika checkSum hanya 1 digit
-        if (finalCheckSum.length()>2){
-            checkSum  = checkSum%100;
-            finalCheckSum = Integer.toString(checkSum);
-            if (finalCheckSum.length() == 1){
-                finalCheckSum = "0"+finalCheckSum;
-            }          
-        }else if(finalCheckSum.length() == 1){
-            finalCheckSum = "0"+finalCheckSum;
-        }
-
-        //Menggabungkan sekaligus return dalam bentuk String
-        String finalID = namaID+"-"+nomorHP+"-"+finalCheckSum;
-        return finalID;
-        // return null;
+        id += String.format("-%02d", checksum % 100);
+        return id;
     }
 
     /**
@@ -210,61 +97,108 @@ public class NotaGenerator {
      *         <p>Tanggal Selesai : [tanggalTerima + LamaHariPaket]
      */
 
-    public static String generateNota(String id, String paket, int berat, String tanggalTerima){
-        id = "ID    : " + id;
-        String teksPaket = "Paket : " + paket;
-        int biaya;
-        int tanggalKembali;
+    public static String generateNota(String id, String paket, int berat, String tanggalTerima, boolean diskon){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar cal = Calendar.getInstance();
+        int year = Integer.parseInt(tanggalTerima.substring(6));
+        int month = Integer.parseInt(tanggalTerima.substring(3, 5)) - 1;
+        int date = Integer.parseInt(tanggalTerima.substring(0, 2));
+        cal.set(year, month, date);
 
-        //Membuat pemisalan di setiap paket
-        if (paket.equals("express")){
-            biaya = 12000;
-            tanggalKembali = 1;
-        }else if(paket.equals("fast")){ 
-            biaya = 10000;
-            tanggalKembali = 2;
+        String nota = "";
+        nota += "ID    : " + id + "\n";
+        nota += "Paket : " + paket + "\n";
+        nota += "Harga :\n";
+        if (diskon){
+            nota += String.format("%d kg x %d = %d = %d (Discount member 50%%!!!)\n", berat, getHargaPaket(paket), (berat * getHargaPaket(paket)),(berat * getHargaPaket(paket))/2);
         }else{
-            biaya = 7000;
-            tanggalKembali = 3;
+            nota += String.format("%d kg x %d = %d\n", berat, getHargaPaket(paket), (berat * getHargaPaket(paket)));
         }
-        
-        //Membuat perhitungan harga total
-        int hargaTotal = berat*biaya;
+        nota += "Tanggal Terima  : " + tanggalTerima + "\n";
+        cal.add(Calendar.DATE, getHariPaket(paket));
+        nota += "Tanggal Selesai : " + formatter.format(cal.getTime());
 
-        //Mengatur tanggal
-        String[] pemisahTanggal = tanggalTerima.split("/");
-        //Mengubah String tanggal menjadi int
-        int tanggal = Integer.parseInt(pemisahTanggal[0]);
-        int bulan = Integer.parseInt(pemisahTanggal[1]);
-        int tahun = Integer.parseInt(pemisahTanggal[2]);
-
-        //Mendapatkan calendar nya
-        Calendar calendar = Calendar.getInstance();
-
-        //Set untuk menghasilkan tanggal laundry selesai
-        calendar.set(tahun, bulan-1, tanggal+tanggalKembali);
-        Date date = calendar.getTime();
-
-        //Membuat formatnya
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/YYYY");
-        String tanggalSelesai = dateFormat.format(date);
-
-        //Membuat hasil akhir
-        String finalNota = id + "\n" + teksPaket + "\n" + "Harga :" + "\n" + berat + " kg" + " x " + biaya + " = " + hargaTotal + "\n" + "Tanggal Terima  : " + tanggalTerima + "\n" + "Tanggal Selesai : " + tanggalSelesai;
-        return finalNota;
+        return nota;
     }
 
-    //Membuat method lain untuk mengecek apakah di sebuah string terdapat angka
-    public static boolean cekNumber(String number){
-        boolean isNumber = true;
-        try{
-            int angka = Integer.parseInt(number);
-        }catch(Exception e){
-            isNumber = false;
+    public static long getHargaPaket(String paket) {
+        paket = paket.toLowerCase();
+        if (paket.equals("express")) return 12000;
+        if (paket.equals("fast")) return 10000;
+        if (paket.equals("reguler")) return 7000;
+        return -1;
+    }
+
+    public static int getHariPaket(String paket) {
+        paket = paket.toLowerCase();
+        if (paket.equals("express")) return 1;
+        if (paket.equals("fast")) return 2;
+        if (paket.equals("reguler")) return 3;
+        return -1;
+    }
+
+    public static boolean isNumeric(String str) {
+        for (char c : str.toCharArray()) {
+            if (!Character.isDigit(c))
+                return false;
         }
-        return isNumber;
+        return true;
+    }
+
+    public static String handleMenuGenerateID() {
+        System.out.println("Masukkan nama Anda:");
+        String nama = input.nextLine();
+
+        System.out.println("Masukkan nomor handphone Anda:");
+        String nomorHP = input.nextLine();
+        while (!isNumeric(nomorHP)) {
+            System.out.println("Nomor hp hanya menerima digit");
+            nomorHP = input.nextLine();
+        }
+
+        return generateId(nama, nomorHP);
+    }
+
+    public static void handleMenuGenerateNota() {
+        String id = handleMenuGenerateID();
+        System.out.println("Masukkan tanggal terima:");
+        String tanggalTerima = input.nextLine();
+
+        String paket = "";
+        while (true) {
+            System.out.println("Masukkan paket laundry:");
+            paket = input.nextLine();
+
+            if (paket.equals("?")) {
+                showPaket();
+                continue;
+            }
+
+            if (getHargaPaket(paket) < 0) {
+                System.out.printf("Paket %s tidak diketahui\n", paket);
+                System.out.println("[ketik ? untuk mencari tahu jenis paket]");
+            } else {
+                break;
+            }
+        }
+
+        System.out.println("Masukkan berat cucian Anda [Kg]: ");
+        String beratInput = input.nextLine();
+        while (!isNumeric(beratInput) || Integer.parseInt(beratInput) < 1) {
+            System.out.println("Harap masukkan berat cucian Anda dalam bentuk bilangan positif.");
+            beratInput = input.nextLine();
+        }
+        int berat = Integer.parseInt(beratInput);
+
+        if (berat < 2) {
+            System.out.println("Cucian kurang dari 2 kg, maka cucian akan dianggap sebagai 2 kg");
+            berat = 2;
+        }
+
+        System.out.println("Nota Laundry");
+        System.out.println(generateNota(id, paket, berat, tanggalTerima));
     }
 }
 
-//acknowledment
+//colaborator
 // Narendra Dzulqarnain - 2206081881
