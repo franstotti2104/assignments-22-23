@@ -5,11 +5,8 @@ import java.util.Calendar;
 import java.util.Scanner;
 
 public class NotaGenerator {
-    private static final Scanner input = new Scanner(System.in);
+    private static final Scanner input = TPScanner.getScanner();
 
-    /**
-     * Method main, program utama kalian berjalan disini.
-     */
     public static void main(String[] args) {
         while (true) {
             printMenu();
@@ -37,26 +34,68 @@ public class NotaGenerator {
         System.out.println("Terima kasih telah menggunakan NotaGenerator!");
     }
 
-    /**
-     * Method untuk menampilkan menu di NotaGenerator.
-     */
-    public static void printMenu() {
-        System.out.println("Selamat datang di NotaGenerator!");
-        System.out.println("==============Menu==============");
-        System.out.println("[1] Generate ID");
-        System.out.println("[2] Generate Nota");
-        System.out.println("[0] Exit");
+    private static void handleMenuGenerateNota() {
+        String id = handleMenuGenerateID();
+        System.out.println("Masukan tanggal terima:");
+        String tanggalTerima = input.nextLine();
+
+        String paket = getPaket();
+        int berat = getBerat();
+
+        System.out.println("Nota Laundry");
+        System.out.println(generateNota(id, paket, berat, tanggalTerima, false));
     }
 
-    /**
-     * Method untuk menampilkan paket.
-     */
-    public static void showPaket() {
-        System.out.println("+-------------Paket-------------+");
-        System.out.println("| Express | 1 Hari | 12000 / Kg |");
-        System.out.println("| Fast    | 2 Hari | 10000 / Kg |");
-        System.out.println("| Reguler | 3 Hari |  7000 / Kg |");
-        System.out.println("+-------------------------------+");
+    public static int getBerat() {
+        System.out.println("Masukan berat cucian Anda [Kg]: ");
+        String beratInput = input.nextLine();
+        while (!isNumeric(beratInput) || Integer.parseInt(beratInput) < 1) {
+            System.out.println("Harap masukan berat cucian Anda dalam bentuk bilangan positif.");
+            beratInput = input.nextLine();
+        }
+        int berat = Integer.parseInt(beratInput);
+
+        if (berat < 2) {
+            System.out.println("Cucian kurang dari 2 kg, maka cucian akan dianggap sebagai 2 kg");
+            berat = 2;
+        }
+
+        return berat;
+    }
+
+    public static String getPaket() {
+        String paket = "";
+        while (true) {
+            System.out.println("Masukan paket laundry:");
+            paket = input.nextLine();
+
+            if (paket.equals("?")) {
+                showPaket();
+                continue;
+            }
+
+            if (toHargaPaket(paket) < 0) {
+                System.out.printf("Paket %s tidak diketahui\n", paket);
+                System.out.println("[ketik ? untuk mencari tahu jenis paket]");
+            } else {
+                break;
+            }
+        }
+        return paket;
+    }
+
+    private static String handleMenuGenerateID() {
+        System.out.println("Masukan nama Anda:");
+        String nama = input.nextLine();
+
+        System.out.println("Masukan nomor handphone Anda:");
+        String nomorHP = input.nextLine();
+        while (!isNumeric(nomorHP)) {
+            System.out.println("Nomor hp hanya menerima digit");
+            nomorHP = input.nextLine();
+        }
+
+        return generateId(nama, nomorHP);
     }
 
     /**
@@ -65,7 +104,7 @@ public class NotaGenerator {
      *
      * @return String ID anggota dengan format [NAMADEPAN]-[nomorHP]-[2digitChecksum]
      */
-    public static String generateId(String nama, String nomorHP){
+    public static String generateId(String nama, String nomorHP) {
         String id = "";
         id += (nama.split(" ")[0] + "-").toUpperCase();
         id += nomorHP;
@@ -96,8 +135,7 @@ public class NotaGenerator {
      *         <p>Tanggal Terima  : [tanggalTerima]
      *         <p>Tanggal Selesai : [tanggalTerima + LamaHariPaket]
      */
-
-    public static String generateNota(String id, String paket, int berat, String tanggalTerima, boolean diskon){
+    public static String generateNota(String id, String paket, int berat, String tanggalTerima, boolean discount) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
         Calendar cal = Calendar.getInstance();
         int year = Integer.parseInt(tanggalTerima.substring(6));
@@ -109,35 +147,40 @@ public class NotaGenerator {
         nota += "ID    : " + id + "\n";
         nota += "Paket : " + paket + "\n";
         nota += "Harga :\n";
-        if (diskon){
-            nota += String.format("%d kg x %d = %d = %d (Discount member 50%%!!!)\n", berat, getHargaPaket(paket), (berat * getHargaPaket(paket)),(berat * getHargaPaket(paket))/2);
-        }else{
-            nota += String.format("%d kg x %d = %d\n", berat, getHargaPaket(paket), (berat * getHargaPaket(paket)));
+        nota += String.format("%d kg x %d = %d", berat, toHargaPaket(paket), (berat * toHargaPaket(paket)));
+        if (discount) {
+            nota += String.format(" = %d (Discount member 50%%!!!)", (berat * toHargaPaket(paket)/2));
         }
-        nota += "Tanggal Terima  : " + tanggalTerima + "\n";
-        cal.add(Calendar.DATE, getHariPaket(paket));
+        nota += "\nTanggal Terima  : " + tanggalTerima + "\n";
+        cal.add(Calendar.DATE, toHariPaket(paket));
         nota += "Tanggal Selesai : " + formatter.format(cal.getTime());
 
         return nota;
     }
 
-    public static long getHargaPaket(String paket) {
+    public static int toHariPaket(String paket) {
         paket = paket.toLowerCase();
-        if (paket.equals("express")) return 12000;
-        if (paket.equals("fast")) return 10000;
-        if (paket.equals("reguler")) return 7000;
+        if (paket.equals("express"))
+            return 1;
+        if (paket.equals("fast"))
+            return 2;
+        if (paket.equals("reguler"))
+            return 3;
         return -1;
     }
 
-    public static int getHariPaket(String paket) {
+    public static long toHargaPaket(String paket) {
         paket = paket.toLowerCase();
-        if (paket.equals("express")) return 1;
-        if (paket.equals("fast")) return 2;
-        if (paket.equals("reguler")) return 3;
+        if (paket.equals("express"))
+            return 12000;
+        if (paket.equals("fast"))
+            return 10000;
+        if (paket.equals("reguler"))
+            return 7000;
         return -1;
     }
 
-    public static boolean isNumeric(String str) {
+    private static boolean isNumeric(String str) {
         for (char c : str.toCharArray()) {
             if (!Character.isDigit(c))
                 return false;
@@ -145,60 +188,19 @@ public class NotaGenerator {
         return true;
     }
 
-    public static String handleMenuGenerateID() {
-        System.out.println("Masukkan nama Anda:");
-        String nama = input.nextLine();
-
-        System.out.println("Masukkan nomor handphone Anda:");
-        String nomorHP = input.nextLine();
-        while (!isNumeric(nomorHP)) {
-            System.out.println("Nomor hp hanya menerima digit");
-            nomorHP = input.nextLine();
-        }
-
-        return generateId(nama, nomorHP);
+    private static void printMenu() {
+        System.out.println("Selamat datang di NotaGenerator!");
+        System.out.println("==============Menu==============");
+        System.out.println("[1] Generate ID");
+        System.out.println("[2] Generate Nota");
+        System.out.println("[0] Exit");
     }
 
-    public static void handleMenuGenerateNota() {
-        String id = handleMenuGenerateID();
-        System.out.println("Masukkan tanggal terima:");
-        String tanggalTerima = input.nextLine();
-
-        String paket = "";
-        while (true) {
-            System.out.println("Masukkan paket laundry:");
-            paket = input.nextLine();
-
-            if (paket.equals("?")) {
-                showPaket();
-                continue;
-            }
-
-            if (getHargaPaket(paket) < 0) {
-                System.out.printf("Paket %s tidak diketahui\n", paket);
-                System.out.println("[ketik ? untuk mencari tahu jenis paket]");
-            } else {
-                break;
-            }
-        }
-
-        System.out.println("Masukkan berat cucian Anda [Kg]: ");
-        String beratInput = input.nextLine();
-        while (!isNumeric(beratInput) || Integer.parseInt(beratInput) < 1) {
-            System.out.println("Harap masukkan berat cucian Anda dalam bentuk bilangan positif.");
-            beratInput = input.nextLine();
-        }
-        int berat = Integer.parseInt(beratInput);
-
-        if (berat < 2) {
-            System.out.println("Cucian kurang dari 2 kg, maka cucian akan dianggap sebagai 2 kg");
-            berat = 2;
-        }
-
-        System.out.println("Nota Laundry");
-        System.out.println(generateNota(id, paket, berat, tanggalTerima));
+    public static void showPaket() {
+        System.out.println("+-------------Paket-------------+");
+        System.out.println("| Express | 1 Hari | 12000 / Kg |");
+        System.out.println("| Fast    | 2 Hari | 10000 / Kg |");
+        System.out.println("| Reguler | 3 Hari |  7000 / Kg |");
+        System.out.println("+-------------------------------+");
     }
 }
-
-//colaborator
-// Narendra Dzulqarnain - 2206081881

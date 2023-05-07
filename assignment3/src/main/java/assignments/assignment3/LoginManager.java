@@ -5,6 +5,8 @@ import assignments.assignment3.user.Member;
 import assignments.assignment3.user.menu.EmployeeSystem;
 import assignments.assignment3.user.menu.MemberSystem;
 import assignments.assignment3.user.menu.SystemCLI;
+import assignments.assignment1.*;
+import java.util.ArrayList;
 
 public class LoginManager {
     private final EmployeeSystem employeeSystem;
@@ -40,7 +42,26 @@ public class LoginManager {
      * @return Member object yang berhasil mendaftar, return null jika gagal mendaftar.
      */
     public Member register(String nama, String noHp, String password) {
-        // TODO
-        return null;
+        String id = "";
+        id += (nama.split(" ")[0] + "-").toUpperCase();
+        id += noHp;
+
+        int checksum = 0;
+        for (char c : id.toCharArray()) {
+            if (Character.isDigit(c))
+                checksum += c - '0';
+            else if (Character.isLetter(c))
+                checksum += (c - 'A') + 1;
+            else
+                checksum += 7;
+        }
+        id += String.format("-%02d", checksum % 100);
+        Member member = new Member(nama, id, password);
+        if(!memberSystem.isMemberExist(member.getId())){
+            memberSystem.addMember(member);
+            return member;
+        }else{
+            return null;
+        }
     }
 }

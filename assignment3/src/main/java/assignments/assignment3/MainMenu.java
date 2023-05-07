@@ -7,6 +7,8 @@ import assignments.assignment3.user.menu.MemberSystem;
 import assignments.assignment3.user.menu.SystemCLI;
 
 import java.util.Scanner;
+import java.security.DrbgParameters.Reseed;
+import java.util.ArrayList;
 
 import static assignments.assignment3.nota.NotaManager.cal;
 import static assignments.assignment3.nota.NotaManager.fmt;
@@ -14,6 +16,7 @@ import static assignments.assignment3.nota.NotaManager.fmt;
 public class MainMenu {
     private final Scanner in;
     private final LoginManager loginManager;
+
 
     /**
      * Entry point for the CuciCuci System application.
@@ -60,7 +63,7 @@ public class MainMenu {
     }
 
     /**
-     * Mendaftarkan user pada sistem.
+     * Mendaftarkan user pada sistem.s
      */
     void register() {
         System.out.println("Masukan nama Anda: ");
@@ -69,7 +72,6 @@ public class MainMenu {
         String noHp = in.nextLine();
         System.out.println("Masukan password Anda: ");
         String password = in.nextLine();
-
         Member registeredMember = loginManager.register(nama, noHp, password);
         if(registeredMember == null){
             System.out.printf("User dengan nama %s dan nomor hp %s sudah ada!\n", nama, noHp);
@@ -88,7 +90,7 @@ public class MainMenu {
         String inputPassword = in.nextLine();
         SystemCLI systemCLI = loginManager.getSystem(inputId);
         if(systemCLI == null){
-            System.out.println("ID atau password invalid.");
+            System.out.println("ID atau password invalid.\n");
             return;
         }
         systemCLI.login(in, inputId, inputPassword);

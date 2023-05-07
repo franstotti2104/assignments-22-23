@@ -4,8 +4,10 @@ import assignments.assignment3.user.Member;
 
 import java.util.Scanner;
 
+import java.util.ArrayList;
+
 public abstract class SystemCLI {
-    protected Member[] memberList = new Member[0];
+    protected static ArrayList<Member> memberList = new ArrayList<Member>();
     protected Member loginMember;
     protected Scanner in;
 
@@ -27,7 +29,7 @@ public abstract class SystemCLI {
             return;
         }
 
-        System.out.println("Invalid ID or password.");
+        System.out.println("Invalid ID or password.\n");
     };
 
     /**

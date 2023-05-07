@@ -14,7 +14,18 @@ public class Employee extends Member {
      * @param nama -> Nama lengkap dari employee
      */
     private static String generateId(String nama) {
-        // TODO
-        return "";
+        String id = "";
+        if(nama.toLowerCase().equals("dek depe")){
+            id = "DEK-0";
+        }else if(nama.toLowerCase().equals("depram")){
+            id = "DEPRAM-1";
+        }else if(nama.toLowerCase().equals("lita duo")){
+            id = "LITA-2";
+        }else if(nama.toLowerCase().equals("ivan hoshimachi")){
+            id = "IVAN-3";
+        }else{
+            id = null;
+        }
+        return id;
     }
 }

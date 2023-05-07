@@ -6,18 +6,19 @@ import assignments.assignment3.user.Member;
 
 import static assignments.assignment3.nota.NotaManager.notaList;
 
+import javax.swing.text.DefaultStyledDocument.ElementSpec;
+
 public class EmployeeSystem extends SystemCLI {
 
     /**
      * Membuat object baru EmployeeSystem dan mendaftarkan Employee pada CuciCuci
      */
     public EmployeeSystem() {
-        memberList = new Member[]{
-                new Employee("Dek Depe", "akuDDP"),
-                new Employee("Depram", "musiktualembut"),
-                new Employee("Lita Duo", "gitCommitPush"),
-                new Employee("Ivan Hoshimachi", "SuamiSahSuisei"),
-        };
+
+        memberList.add(new Employee("Dek Depe", "akuDDP"));
+        memberList.add(new Employee("Depram", "musiktualembut"));
+        memberList.add(new Employee("Lita Duo", "gitCommitPush"));
+        memberList.add(new Employee("Ivan Hoshimachi", "SuamiSahSuisei"));
     }
 
     /**
@@ -29,7 +30,11 @@ public class EmployeeSystem extends SystemCLI {
     @Override
     protected boolean processChoice(int choice) {
         boolean logout = false;
-        // TODO:
+        if(choice == 3){
+            logout = true;
+        }else{
+            logout = false;
+        }
         return logout;
     }
 

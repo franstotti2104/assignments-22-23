@@ -3,66 +3,58 @@ package assignments.assignment2;
 import assignments.assignment1.NotaGenerator;
 
 public class Nota {
-    // TODO: tambahkan attributes yang diperlukan untuk class ini
+
+    private int idNota;
     private Member member;
     private String paket;
     private int berat;
-    private String tanggalMasuk;
-    private int sisaHari;
-    private int idNota;
-    private boolean ready;
-    
-    public Nota(Member member, String paket, int berat, String tanggalMasuk) {
-        // TODO: buat constructor untuk class ini
+    private String tanggalTerima;
+    private int sisaHariPengerjaan;
+    static public int totalNota;
+
+    private boolean isReady = false;
+
+    public Nota(Member member, String paket, int berat, String tanggalTerima) {
+        this.idNota = totalNota;
         this.member = member;
         this.paket = paket;
         this.berat = berat;
-        this.tanggalMasuk = tanggalMasuk;
+        this.tanggalTerima = tanggalTerima;
+        this.sisaHariPengerjaan = NotaGenerator.toHariPaket(paket);
+        totalNota++;
+        member.addBonusCounter(1);
     }
-    // TODO: tambahkan methods yang diperlukan untuk class ini
-
-    public int idNota(){
-        return null;
-    }
-
-    public String paket(){
-        return paket;
-    }
-
-    public int berat(){
-        return berat;
-    }
-
-    public String tanggalMasuk(){
-        return tanggalMasuk;
-    }
-
-    public Member member(){
-        return member;
-    }
-
-    public void setSisaHariPengerjaan(int sisaHari){
-        this.sisaHari = sisaHari;
-    }
-
-    public int getSisaHari(){
-        return sisaHari;
-    }
-
-    public void setIsReady(boolean ready){
-        this.ready = ready;
-    }
-
-    public boolean getIsReady(){
-        return ready;
-    }
-
-    public void setNota(int idNota){
-        this.idNota = idNota;
-    }
-
-    public int getNota(){
+    public int getId() {
         return idNota;
     }
-     
+
+    public boolean isReady() {
+        return isReady;
+    }
+
+    public boolean toNextDay(){
+        sisaHariPengerjaan--;
+        if(sisaHariPengerjaan <= 0){
+            isReady = true;
+        }
+        return isReady;
+    }
+
+    public String getStatus() {
+        String message = isReady ? "Sudah dapat diambil!" : "Belum bisa diambil :(";
+        return "Status          : " + message;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[ID Nota = %d]%n", idNota) + NotaGenerator.generateNota(member.getId(), paket, berat, tanggalTerima, member.isDiscount()) + "\n"
+                + getStatus();
+    }
+    public boolean equals(int idNota) {
+        return idNota == this.idNota;
+    }
+
+    public boolean equals(Nota nota) {
+        return equals(nota.getId());
+    }
 }
